@@ -1,0 +1,30 @@
+<?php
+/**
+ * Baz view template
+ *
+ * @var $block \Foo\Bar\Block\Baz
+ */
+?>
+<?php
+echo $block->sayHello();
+?>
+<h1>
+    <?php echo 'dv'; ?>
+</h1>
+<fieldset class="fieldset admin__fieldset " id="item_base_fieldset">
+    <legend class="admin__legend legend">
+        <span>PriceRule Information</span>
+    </legend>
+    <br>
+        <div class="messages">
+        </div>
+        <div class="admin__field field field-name  required _required" data-ui-id="zipcode-items-edit-form-fieldset-element-form-field-name">
+            <label class="label admin__field-label" for="item_name" data-ui-id="zipcode-items-edit-form-fieldset-element-text-name-label">
+                <span>PriceRule Name</span>
+            </label>
+            <div class="admin__field-control control">
+                <input id="item_name_" name="name_" data-ui-id="zipcode-items-edit-form-fieldset-element-text-name" value="" title="PriceRule Name" type="text" class=" input-text admin__control-text required-entry _required">                            
+                </div>
+            </div>
+            <input name="name" data-ui-id="zipcode-items-edit-form-fieldset-element-text-name" value="Save PriceRule" title="PriceRule Name" type="submit" >                            
+            </fieldset>

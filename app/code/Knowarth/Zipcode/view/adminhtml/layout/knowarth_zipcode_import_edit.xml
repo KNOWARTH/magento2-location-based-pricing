@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Pagseguro. All rights reserved.
+ */
+-->
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="left">
+            <block class="Knowarth\Zipcode\Block\Adminhtml\Import\Edit\Tabs" name="knowarth_zipcode_import_edit_tabs">
+                <block class="Knowarth\Zipcode\Block\Adminhtml\Import\Edit\Tab\Main" name="knowarth_zipcode_import_edit_tab_main"/>
+                <!-- <block class="Knowarth\Zipcode\Block\Adminhtml\Items\Edit\Tab\Price" template="Knowarth_Zipcode::default/baz.phtml" name="knowarth_zipcode_items_edit_tab_price"/> -->
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">zipcode</argument>
+                    <argument name="block" xsi:type="string">knowarth_zipcode_import_edit_tab_main</argument>
+                </action>
+                <!--action method="addTab">
+                    <argument name="name" xsi:type="string">price</argument>
+                    <argument name="block" xsi:type="string">knowarth_zipcode_items_edit_tab_price</argument>
+                </action-->
+<!--                 <block class="Knowarth\Zipcode\Block\Adminhtml\Items\Edit\Tab\Price" name="knowarth_zipcode_items_edit_tab_price"/>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">main_section</argument>
+                    <argument name="block" xsi:type="string">knowarth_zipcode_items_edit_tab_price</argument>
+                </action>
+ -->            </block>
+        </referenceContainer>
+        <referenceContainer name="content">
+            <block class="Knowarth\Zipcode\Block\Adminhtml\Import\Edit" name="zipcode_import_edit"/>
+        </referenceContainer>
+    </body>
+</page>
