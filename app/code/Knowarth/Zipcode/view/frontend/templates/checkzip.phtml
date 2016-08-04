@@ -1,0 +1,41 @@
+<h1><?php // echo $block->getTitle(); ?></h1>
+<?php //{{block class="Knowarth\Zipcode\Block\CheckZip" name="lofformbuilder-toplinks" template="Knowarth_Zipcode::checkzip.phtml"}} ?>
+<?php 
+    $zip = $this->getSessionData('zip');
+    if($zip != 'valid'){
+    ?>
+    <div id="popup-mpdal">
+    <form action="#" method="post">
+    <input name = "zipcode" type="text" placeholder="zipcode">
+    <input name = "zipsubmit" type="submit" >
+    <?php
+    print_r($this->checkZipcode());
+    echo $this->getSessionData('zip');
+    ?>
+    </form>
+</div>
+    <?php   } ?>
+<script>
+    require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function(
+            $,
+            modal
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                title: 'Enter',
+                buttons: []
+            };
+
+            var popup = modal(options, $('#popup-mpdal'));
+
+            $('#popup-mpdal').modal('openModal');
+        }
+    );
+</script>
