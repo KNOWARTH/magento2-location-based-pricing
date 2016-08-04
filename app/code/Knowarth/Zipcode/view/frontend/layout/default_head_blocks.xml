@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+       <!--  <css src="css/styles-m.css" />
+        <css src="css/styles-l.css" media="screen and (min-width: 768px)"/>
+       <css src="css/print.css" media="print" /> -->
+          <block class="Knowarth\Zipcode\Block\CheckZip" name="lofformbuilder-toplinks" template="Knowarth_Zipcode::checkzip.phtml"/>
+
+    </head>
+    <body>
+    <referenceBlock name="head.additional">
+          <block class="Knowarth\Zipcode\Block\CheckZip" name="lofformbuilder-toplinks" template="Knowarth_Zipcode::checkzip.phtml"/>
+
+    </referenceBlock>
+</body>
+</page>

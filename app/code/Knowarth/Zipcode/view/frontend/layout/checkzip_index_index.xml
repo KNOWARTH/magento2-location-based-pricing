@@ -4,5 +4,10 @@
   <referenceContainer name="content">
    <block class="Knowarth\Zipcode\Block\CheckZip" name="lofformbuilder-toplinks" template="Knowarth_Zipcode::checkzip.phtml"/>
   </referenceContainer>
+<!--       <referenceBlock name="head.additional">
+          <block class="Knowarth\Zipcode\Block\CheckZip" name="lofformbuilder-toplinks" template="Knowarth_Zipcode::checkzip.phtml"/>
+
+    </referenceBlock>
+ -->
  </body>
 </page>
