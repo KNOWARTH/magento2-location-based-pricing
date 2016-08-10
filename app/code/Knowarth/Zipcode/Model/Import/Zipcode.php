@@ -189,6 +189,28 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
     }
     return $this;
     }
+    public function wayToFindDelimeter($file)
+    {
+        $delimiters = array(
+            'semicolon' => ";",
+            'tab'       => "\t",
+            'comma'     => ",",
+        );
+
+        //Load the csv file into a string
+        $csv = file_get_contents($file);
+        foreach ($delimiters as $key => $delim) {
+            $res[$key] = substr_count($csv, $delim);
+        }
+
+        //reverse sort the values, so the [0] element has the most occured delimiter
+        arsort($res);
+
+        reset($res);
+        $first_key = key($res);
+
+        return $delimiters[$first_key]; 
+    }
  /**
      * Save and replace newsletter subscriber
      *
@@ -198,7 +220,10 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     public function csvToArray($data,$filename)
     {
-        $delimiter=',';
+        $delimiter = $this->wayToFindDelimeter($filename);
+        // print_r($delimiter);
+        // exit;
+        // $delimiter=';';
         if(!file_exists($filename) || !is_readable($filename))
             return FALSE;
         $header = NULL;
@@ -214,7 +239,8 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
             }
             fclose($handle);
         }
-                
+                // print_r($data);
+                // exit;
         $this-> saveAndReplaceEntity($data);
     }
     
@@ -227,16 +253,17 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
             foreach ($bunch as $rowNum => $rowData) {
                 $rowTtile= $rowNum;
                 // print_r($rowData);
-                $ExrowData = explode(";",$rowData["id;name;zipcode;status"]);
+                // $ExrowData = explode(";",$rowData["id;name;zipcode;status"]);
                 // print_r($ExrowData);
                 // $rowTtile= 'name';
                 $listTitle[] = $rowTtile;
                 $entityList[$rowTtile][] = [
-                  self::EVENTNAME => $ExrowData[1],
-                  self::EVENTZIPCODE => $ExrowData[2],
-                  self::EVENTSTATUS => $ExrowData[3],
+                  self::EVENTNAME => $rowData[self::EVENTNAME],
+                  self::EVENTZIPCODE => $rowData[self::EVENTZIPCODE],
+                  self::EVENTSTATUS => $rowData[self::EVENTSTATUS],
                 ];
             }
+            // print_r($entityList);
             // exit;
             if (\Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE == $behavior) {
                 if ($listTitle) {

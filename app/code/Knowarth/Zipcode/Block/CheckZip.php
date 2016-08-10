@@ -53,12 +53,9 @@ class CheckZip extends \Magento\Framework\View\Element\Template
                   $Name  =  $product->getName();
                   break;
             }  
-            $this->setSessionData('zip','valid');
+            // $this->setSessionData('zip','valid');
             return $Name;
             
         }
     }
-    public function getTitle(){
-        return "static block";
-        }
 }

@@ -1,20 +1,63 @@
-<h1><?php // echo $block->getTitle(); ?></h1>
+<h1><?php // echo $block->getTitle(); 
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $cookieManager = $objectManager->get('Magento\Framework\Stdlib\CookieManagerInterface');
+
+            //get cookie value
+            // $customeZ = $cookieManager->setPublicCookie('customeZ', 'customeZi');
+            // $customeZ = $cookieManager->getCookie('customeZ');
+            // $customeZip = $cookieManager->getCookie('customerZipSet');
+
+    ?></h1>
 <?php //{{block class="Knowarth\Zipcode\Block\CheckZip" name="lofformbuilder-toplinks" template="Knowarth_Zipcode::checkzip.phtml"}} ?>
 <?php 
-    $zip = $this->getSessionData('zip');
-    if($zip != 'valid'){
+    // $zip = $this->getSessionData('zip');
+    if(empty($cookieManager->getCookie('customerZipSet'))){
     ?>
     <div id="popup-mpdal">
-    <form action="#" method="post">
-    <input name = "zipcode" type="text" placeholder="zipcode">
-    <input name = "zipsubmit" type="submit" >
-    <?php
-    print_r($this->checkZipcode());
-    echo $this->getSessionData('zip');
-    ?>
+    <form action="#" method="post" id="zipform" name ="zipform">
+        <input name = "zipcode" type="text" placeholder="zipcode">
+        <input id="formsubmit" name = "zipsubmit" type="button" value="submit" >
     </form>
 </div>
-    <?php   } ?>
+    <?php   }  ?>
+    <script>
+        require(['jquery'], function($) {
+
+            $(document).ready(function($) {
+
+                $( "#formsubmit" ).click(function() {
+                    var data = $('#zipform').serialize();
+                    // alert(data);
+                    // console.log(data);
+                    jQuery.ajax({
+                        url:'<?php  echo $this->getBaseUrl()."knowarth_zipcode/check/zip/"; ?>',
+                        type:'POST',
+                        data: data,
+                        showLoader:true,
+                        // beforeSend:function()
+                        // {
+                            // jQuery('.loader').show();
+                        // },
+                        success: function(response)
+                        {
+                            if(response.success == true){
+                                document.cookie="customerZipSet=customerZipSet";
+                                // $('#popup-mpdal').closeModal();
+                                $('#popup-mpdal').modal('closeModal')
+                            // var cookieValue = document.cookie;
+                            // alert(cookieValue);
+                            }
+                            else {
+                                alert("Invalid Zipcode");
+                            }
+                            // alert(response.success);
+                        }
+                    });
+                });
+
+            });
+        });
+    </script>
 <script>
     require(
         [

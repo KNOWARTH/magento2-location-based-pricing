@@ -8,7 +8,5 @@
     <menu>
         <add id="knowarth_zipcode::base" title="Knowarth Zipcode" module="Knowarth_Zipcode" sortOrder="95" resource="Knowarth_Zipcode::sample"/>
         <add id="knowarth_zipcode::zipcode" title="Zipcodes" module="Knowarth_Zipcode" sortOrder="15" parent="knowarth_zipcode::base" action="knowarth_zipcode/items/" resource="Knowarth_Zipcode::items"/>
-        <add id="knowarth_zipcode::IE" title="Import Export" module="Knowarth_Zipcode" sortOrder="16" parent="knowarth_zipcode::base" action="knowarth_zipcode/import/" resource="Knowarth_Zipcode::import"/>
-        <add id="knowarth_zipcode::zIE" title="Import Export" module="Knowarth_Zipimportexport" sortOrder="17" parent="knowarth_zipcode::base" action="knowarth_zipimortexport/import/" resource="Knowarth_Zipimportexport::import"/>
     </menu>
 </config>
