@@ -9,15 +9,15 @@ class CheckZip extends \Magento\Framework\View\Element\Template
     protected $_customerSession;
 
     public function __construct(
-    \Magento\Framework\View\Element\Template\Context $context,
-    \Magento\Customer\Model\Session $customerSession,  
-    \Magento\Framework\ObjectManagerInterface $objectManager,
-    array $data = []
- ) {
-    parent::__construct($context, $data);
-    $this->_customerSession = $customerSession;
-    $this->_objectManager = $objectManager;
-  }
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Customer\Model\Session $customerSession,  
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        array $data = []
+     ) {
+        parent::__construct($context, $data);
+        $this->_customerSession = $customerSession;
+        $this->_objectManager = $objectManager;
+      }
     public function getCustomerSession() 
     {
         return $this->_customerSession;

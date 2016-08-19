@@ -14,14 +14,25 @@
     if(empty($cookieManager->getCookie('customerZipSet'))){
     ?>
     <div id="popup-mpdal">
+    <div class="divIDClass"><h1>Please enter valid postal code<h1> </div>
     <form action="#" method="post" id="zipform" name ="zipform">
         <input name = "zipcode" type="text" placeholder="zipcode">
-        <input id="formsubmit" name = "zipsubmit" type="button" value="submit" >
+        <div class="form-actions">
+    <!--button class="action-login action-primary" type =  id="formsubmit" name = "zipsubmit" >
+        <span>Sign in</span>
+    </button>
+    <div class="primary"><button  class="action login primary" id="formsubmit" name = "zipsubmit"><span>Login</span></button></div-->
+<!--div class="links">
+<a class="action-forgotpassword" href="http://localhost/24mag/admin/admin/auth/forgotpassword/">Forgot your password?</a>
+</div>
+        </div-->
+        <input id="formsubmit" class="action login primary" name = "zipsubmit" type="button" value="submit" >
     </form>
 </div>
     <?php   }  ?>
     <script>
         require(['jquery'], function($) {
+        $(".divIDClass").hide();
 
             $(document).ready(function($) {
 
@@ -48,7 +59,8 @@
                             // alert(cookieValue);
                             }
                             else {
-                                alert("Invalid Zipcode");
+                                $(".divIDClass").show();
+                                // alert("Invalid Zipcode");
                             }
                             // alert(response.success);
                         }

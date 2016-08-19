@@ -1,18 +1,15 @@
 <?php
 namespace Knowarth\Zipcode\Model\Import;
 
-// use Knowarth\Zipcode\Model\Import\Zipcode\RowValidatorInterface as ValidatorInterface;
 use Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregatorInterface;
 use Magento\Framework\App\ResourceConnection;
 
 class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
 {
 
-    const ID = 'id';
     const EVENTNAME = 'name';
     const EVENTZIPCODE = 'zipcode';
     const EVENTSTATUS = 'status';
-
     const TABLE_Entity = 'knowarth_zipcode_items';
 
     /**
@@ -20,11 +17,10 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      *
      * @var array
      */
+    protected $_messageManager;
     protected $_messageTemplates = [
-    // ValidatorInterface::ERROR_TITLE_IS_EMPTY => 'TITLE is empty',
     ];
 
-     protected $_permanentAttributes = [self::ID];
     /**
      * If we should check column names
      *
@@ -38,7 +34,6 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      * @array
      */
     protected $validColumnNames = [
-    self::ID,
     self::EVENTNAME,
     self::EVENTZIPCODE,
     self::EVENTSTATUS,
@@ -65,6 +60,7 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
      */
     public function __construct(
+    \Magento\Framework\Message\ManagerInterface $messageManager,
     \Magento\Framework\Json\Helper\Data $jsonHelper,
     \Magento\ImportExport\Helper\Data $importExportData,
     \Magento\ImportExport\Model\ResourceModel\Import\Data $importData,
@@ -74,6 +70,7 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
     ProcessingErrorAggregatorInterface $errorAggregator,
     \Magento\Customer\Model\GroupFactory $groupFactory
     ) {
+    $this->_messageManager = $messageManager;
     $this->jsonHelper = $jsonHelper;
     $this->_importExportData = $importExportData;
     $this->_resourceHelper = $resourceHelper;
@@ -115,16 +112,9 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
     }
 
     $this->_validatedRows[$rowNum] = true;
-    // BEHAVIOR_DELETE use specific validation logic
-       // if (\Magento\ImportExport\Model\Import::BEHAVIOR_DELETE == $this->getBehavior()) {
-        if (!isset($rowData[self::ID]) || empty($rowData[self::ID])) {
-            // $this->addRowError(ValidatorInterface::ERROR_TITLE_IS_EMPTY, $rowNum);
-            return false;
-        }
 
     return !$this->getErrorAggregator()->isRowInvalid($rowNum);
     }
-
 
     /**
      * Create Advanced price data from raw data.
@@ -134,15 +124,15 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     protected function _importData()
     {
-    if (\Magento\ImportExport\Model\Import::BEHAVIOR_DELETE == $this->getBehavior()) {
-        $this->deleteEntity();
-    } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE == $this->getBehavior()) {
-        $this->replaceEntity();
-    } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_APPEND == $this->getBehavior()) {
-        $this->saveEntity();
-    }
+        if (\Magento\ImportExport\Model\Import::BEHAVIOR_DELETE == $this->getBehavior()) {
+            $this->deleteEntity();
+        } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE == $this->getBehavior()) {
+            $this->replaceEntity();
+        } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_APPEND == $this->getBehavior()) {
+            $this->saveEntity();
+        }
 
-    return true;
+        return true;
     }
     /**
      * Save newsletter subscriber
@@ -151,8 +141,8 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     public function saveEntity()
     {
-    $this->saveAndReplaceEntity();
-    return $this;
+        $this->saveAndReplaceEntity();
+        return $this;
     }
     /**
      * Replace newsletter subscriber
@@ -161,34 +151,32 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     public function replaceEntity()
     {
-    $this->saveAndReplaceEntity();
-    return $this;
+        $this->saveAndReplaceEntity();
+        return $this;
     }
     /**
      * Deletes newsletter subscriber data from raw data.
      *
      * @return $this
      */
-    public function deleteEntity()
+    public function checkExistingZipcode()
     {
-    $listTitle = [];
-    while ($bunch = $this->_dataSourceModel->getNextBunch()) {
-        foreach ($bunch as $rowNum => $rowData) {
-            $this->validateRow($rowData, $rowNum);
-            if (!$this->getErrorAggregator()->isRowInvalid($rowNum)) {
-                $rowTtile = $rowData[self::ID];
-                $listTitle[] = $rowTtile;
+        $zipItemName = [];
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+        $productCollection = $objectManager->create('Knowarth\Zipcode\Model\Resource\Items\CollectionFactory');
+
+        $collection = $productCollection->create()
+                    ->load();
+
+        foreach ($collection as $zipItem){
+            if(!empty($zipItem->getZipcode())){
+                $zipItemName[$zipItem->getZipcode()]  =  $zipItem->getZipcode();
             }
-            if ($this->getErrorAggregator()->hasToBeTerminated()) {
-                $this->getErrorAggregator()->addRowToSkip($rowNum);
-            }
-        }
-    }
-    if ($listTitle) {
-        $this->deleteEntityFinish(array_unique($listTitle),self::TABLE_Entity);
-    }
-    return $this;
-    }
+        }  
+        
+        return $zipItemName;
+    } 
     public function wayToFindDelimeter($file)
     {
         $delimiters = array(
@@ -221,9 +209,6 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
     public function csvToArray($data,$filename)
     {
         $delimiter = $this->wayToFindDelimeter($filename);
-        // print_r($delimiter);
-        // exit;
-        // $delimiter=';';
         if(!file_exists($filename) || !is_readable($filename))
             return FALSE;
         $header = NULL;
@@ -239,39 +224,64 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
             }
             fclose($handle);
         }
-                // print_r($data);
-                // exit;
-        $this-> saveAndReplaceEntity($data);
+        $tempZipData = $this->checkExistingZipcode();
+        $this-> saveAndReplaceEntity($data, $tempZipData);
     }
     
-    public function saveAndReplaceEntity($data)
+    public function saveAndReplaceEntity($data, $tempZipData)
     {
         $behavior = $this->getBehavior();
         $listTitle = [];
         $bunch = $data;
             $entityList = [];
             foreach ($bunch as $rowNum => $rowData) {
-                $rowTtile= $rowNum;
-                // print_r($rowData);
-                // $ExrowData = explode(";",$rowData["id;name;zipcode;status"]);
-                // print_r($ExrowData);
-                // $rowTtile= 'name';
-                $listTitle[] = $rowTtile;
-                $entityList[$rowTtile][] = [
-                  self::EVENTNAME => $rowData[self::EVENTNAME],
-                  self::EVENTZIPCODE => $rowData[self::EVENTZIPCODE],
-                  self::EVENTSTATUS => $rowData[self::EVENTSTATUS],
-                ];
-            }
-            // print_r($entityList);
-            // exit;
-            if (\Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE == $behavior) {
-                if ($listTitle) {
-                    if ($this->deleteEntityFinish(array_unique(  $listTitle), self::TABLE_Entity)) {
-                        $this->saveEntityFinish($entityList, self::TABLE_Entity);
-                    }
+                if(!in_array($rowData[self::EVENTZIPCODE], $tempZipData) && !empty($rowData[self::EVENTZIPCODE]))
+                {
+                    $rowTtile= $rowNum;
+                    $listTitle[] = $rowTtile;
+                    $entityList[$rowTtile][] = [
+                      self::EVENTNAME => $rowData[self::EVENTNAME],
+                      self::EVENTZIPCODE => $rowData[self::EVENTZIPCODE],
+                      self::EVENTSTATUS => $rowData[self::EVENTSTATUS],
+                    ];
+                    // $entityListIn[] = [
+                      // self::EVENTNAME => $rowData[self::EVENTNAME],
+                      // self::EVENTZIPCODE => $rowData[self::EVENTZIPCODE],
+                      // self::EVENTSTATUS => $rowData[self::EVENTSTATUS],
+                    // ];
+                    // $table = self::TABLE_Entity;
+                    // $tableName = $this->_connection->getTableName($table);
+                    // $this->_connection->insertOnDuplicate($tableName, $entityListIn,[
+                    // self::EVENTNAME,
+                    // self::EVENTZIPCODE,
+                    // self::EVENTSTATUS,
+                // ]);
+
+
                 }
-            } elseif (\Magento\ImportExport\Model\Import::BEHAVIOR_APPEND == $behavior) {
+                elseif(!empty($rowData[self::EVENTZIPCODE]))
+                {   
+                    $table = self::TABLE_Entity;
+                    $tableName = $this->_connection->getTableName($table);
+                    $bind =[
+                      self::EVENTNAME => $rowData[self::EVENTNAME],
+                      self::EVENTZIPCODE => $rowData[self::EVENTZIPCODE],
+                      self::EVENTSTATUS => $rowData[self::EVENTSTATUS],
+                    ];
+                    print_r($bind);
+                    $where  = $this->_connection->quoteInto('zipcode LIKE (?)', $rowData[self::EVENTZIPCODE]);
+                    // $where = "zipcode"." = $rowData['zipcode']";
+                    $this->_connection->update($table, $bind, $where);
+                    $rowTtile= $rowNum;
+                    $listTitle[] = $rowTtile;
+                    $entityUpdateList[$rowTtile][] = [
+                      self::EVENTNAME => $rowData[self::EVENTNAME],
+                      self::EVENTZIPCODE => $rowData[self::EVENTZIPCODE],
+                      self::EVENTSTATUS => $rowData[self::EVENTSTATUS],
+                    ];
+                }
+            }
+            if (\Magento\ImportExport\Model\Import::BEHAVIOR_APPEND == $behavior) {
                 $this->saveEntityFinish($entityList, self::TABLE_Entity);
             }
         return $this;
@@ -285,24 +295,23 @@ class Zipcode extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity
      */
     public function saveEntityFinish(array $entityData, $table)
     {
-    if ($entityData) {
-        $tableName = $this->_connection->getTableName($table);
-        $entityIn = [];
-        foreach ($entityData as $id => $entityRows) {
-                foreach ($entityRows as $row) {
-                    $entityIn[] = $row;
-                }
+        if ($entityData) {
+            $tableName = $this->_connection->getTableName($table);
+            $entityIn = [];
+            foreach ($entityData as $id => $entityRows) {
+                    foreach ($entityRows as $row) {
+                        $entityIn[] = $row;
+                    }
+            }
+            if ($entityIn) {
+                $this->_connection->insertOnDuplicate($tableName, $entityIn,[
+                    self::EVENTNAME,
+                    self::EVENTZIPCODE,
+                    self::EVENTSTATUS,
+                ]);
+            }
         }
-        if ($entityIn) {
-            $this->_connection->insertOnDuplicate($tableName, $entityIn,[
-                self::ID,
-                self::EVENTNAME,
-                self::EVENTZIPCODE,
-                self::EVENTSTATUS,
-        ]);
-        }
-    }
-    return $this;
+        return $this;
     }
     protected function deleteEntityFinish(array $listTitle, $table)
     {

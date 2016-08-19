@@ -14,19 +14,13 @@ class Save extends \Knowarth\Zipcode\Controller\Adminhtml\Import
                 $model = $this->_objectManager->create('Knowarth\Zipcode\Model\Import');
                 $modelZipcode = $this->_objectManager->create('Knowarth\Zipcode\Model\Import\Zipcode');                
                 $data = $this->getRequest()->getPostValue();                
-                // $_FILES["name"]["name"];
-                // if(isset($_FILES["name"])){
-                // print_r($data);
-// echo                $_FILES['name']['name'];
-// echo                $_FILES['name']['tmp_name'];
-                // }
+     
                 $inputFilter = new \Zend_Filter_Input(
                     [],
                     [],
                     $data
                 );
                 $data = $inputFilter->getUnescaped();
-                // exit;
                 $id = $this->getRequest()->getParam('id');
                 if ($id) {
                     $model->load($id);
@@ -36,11 +30,8 @@ class Save extends \Knowarth\Zipcode\Controller\Adminhtml\Import
                 }
                 $model->setData($data);
                 $modelZipcode->csvToArray($data,$_FILES['name']['tmp_name']);
-                // exit;
-                //$modelZipcode->saveEntityFinish($data,'knowarth_zipcode_items');
                 $session = $this->_objectManager->get('Magento\Backend\Model\Session');
                 $session->setPageData($model->getData());
-                // $model->save();
                 $this->messageManager->addSuccess(__('You saved the item.'));
                 $session->setPageData(false);
                 if ($this->getRequest()->getParam('back')) {
